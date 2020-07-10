@@ -30,7 +30,7 @@ public class SampleServiceNative  extends Service {
 
     public static void startForegroundWithNoti(Service service, int notifyId, String channelId, CharSequence channelName, Notification notification) {
         NotificationManager notificationManager = (NotificationManager) service.getSystemService(NOTIFICATION_SERVICE);
-        // handle build version above android oreo
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                 && notificationManager.getNotificationChannel(channelId) == null) {
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
@@ -38,17 +38,16 @@ public class SampleServiceNative  extends Service {
             channel.enableVibration(false);
             notificationManager.createNotificationChannel(channel);
         }
-//        Notification notification = new NotificationCompat.Builder(service, channelId)
-//                .setSmallIcon(R.mipmap.icon_logo)
-//                .setGroup(KIOSK_GROUP)
-//                .setPriority(Notification.PRIORITY_DEFAULT)
-//                .setOnlyAlertOnce(true)
-//                .setCategory(Notification.CATEGORY_SERVICE)
-//                .setPriority(NotificationCompat.PRIORITY_LOW)
-//                .build();
+
         service.startForeground(notifyId, notification);
     }
 
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        onStartCheckIntent(intent);
+        return super.onStartCommand(intent, flags, startId);
+    }
 
     private Notification getNoti() {
         return new NotificationCompat.Builder(this, channelId)
@@ -87,7 +86,7 @@ public class SampleServiceNative  extends Service {
                 for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
                     Log.i("vtt %s", service.service.getPackageName());
                 }
-                Thread.sleep(5000);
+                Thread.sleep(10000);
                 SampleServiceNative.this.stopSelf();
             } catch (InterruptedException e) {
                 e.printStackTrace();
